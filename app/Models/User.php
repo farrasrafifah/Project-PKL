@@ -31,7 +31,7 @@ class User extends Authenticatable
         ];
     }
 
-    // ================= ROLE HELPERS =================
+        // ================= ROLE HELPERS =================
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
@@ -42,16 +42,11 @@ class User extends Authenticatable
         return $this->role === 'redaksi';
     }
 
-    public function isPenulis(): bool
+    public function isUser(): bool
     {
-        return $this->role === 'penulis';
+        return $this->role === 'user';
     }
-
-    public function isPembaca(): bool
-    {
-        return $this->role === 'pembaca';
-    }
-
+    
     // ================= RELASI (dipakai nanti) =================
     public function books()
     {

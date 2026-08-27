@@ -31,6 +31,7 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
+
         $request->session()->regenerateToken();
 
         return redirect('/');
@@ -41,8 +42,8 @@ class AuthenticatedSessionController extends Controller
         return match ($user->role) {
             'admin' => route('admin.dashboard'),
             'redaksi' => route('redaksi.dashboard'),
-            'penulis' => route('penulis.dashboard'),
-            default => route('pembaca.home'),
+            'user' => route('user.home'),
+            default => route('user.home'),
         };
     }
 }
