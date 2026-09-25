@@ -11,23 +11,34 @@
                 </div>
 
                 <!-- Navigation Links (beda-beda sesuai role) -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                <div class="hidden space-x-6 sm:-my-px sm:ms-10 sm:flex">
                     @auth
-                        @if (auth()->user()->role === 'pembaca')
-                            <x-nav-link :href="route('pembaca.home')" :active="request()->routeIs('pembaca.home')">
+                        @if (auth()->user()->role === 'user')
+                            <x-nav-link :href="route('user.home')" :active="request()->routeIs('user.home')">
                                 {{ __('Home') }}
                             </x-nav-link>
-                        @elseif (auth()->user()->role === 'penulis')
-                            <x-nav-link :href="route('penulis.dashboard')" :active="request()->routeIs('penulis.dashboard')">
-                                {{ __('Dashboard Penulis') }}
+                            <x-nav-link :href="route('user.buku.index')" :active="request()->routeIs('user.buku.*')">
+                                {{ __('Buku') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('user.library.index')" :active="request()->routeIs('user.library.*')">
+                                {{ __('Library') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('user.menulis.index')" :active="request()->routeIs('user.menulis.*')">
+                                {{ __('Menulis') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('user.keranjang.index')" :active="request()->routeIs('user.keranjang.*')">
+                                {{ __('Keranjang') }}
                             </x-nav-link>
                         @elseif (auth()->user()->role === 'redaksi')
                             <x-nav-link :href="route('redaksi.dashboard')" :active="request()->routeIs('redaksi.dashboard')">
-                                {{ __('Dashboard Redaksi') }}
+                                {{ __('Dashboard') }}
+                            </x-nav-link>
+                            <x-nav-link :href="route('redaksi.naskah.index')" :active="request()->routeIs('redaksi.naskah.*')">
+                                {{ __('Naskah Masuk') }}
                             </x-nav-link>
                         @elseif (auth()->user()->role === 'admin')
                             <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                                {{ __('Dashboard Admin') }}
+                                {{ __('Dashboard') }}
                             </x-nav-link>
                         @endif
                     @else
@@ -89,21 +100,32 @@
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
         <div class="pt-2 pb-3 space-y-1">
             @auth
-                @if (auth()->user()->role === 'pembaca')
-                    <x-responsive-nav-link :href="route('pembaca.home')" :active="request()->routeIs('pembaca.home')">
+                @if (auth()->user()->role === 'user')
+                    <x-responsive-nav-link :href="route('user.home')" :active="request()->routeIs('user.home')">
                         {{ __('Home') }}
                     </x-responsive-nav-link>
-                @elseif (auth()->user()->role === 'penulis')
-                    <x-responsive-nav-link :href="route('penulis.dashboard')" :active="request()->routeIs('penulis.dashboard')">
-                        {{ __('Dashboard Penulis') }}
+                    <x-responsive-nav-link :href="route('user.buku.index')" :active="request()->routeIs('user.buku.*')">
+                        {{ __('Buku') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('user.library.index')" :active="request()->routeIs('user.library.*')">
+                        {{ __('Library') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('user.menulis.index')" :active="request()->routeIs('user.menulis.*')">
+                        {{ __('Menulis') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('user.keranjang.index')" :active="request()->routeIs('user.keranjang.*')">
+                        {{ __('Keranjang') }}
                     </x-responsive-nav-link>
                 @elseif (auth()->user()->role === 'redaksi')
                     <x-responsive-nav-link :href="route('redaksi.dashboard')" :active="request()->routeIs('redaksi.dashboard')">
-                        {{ __('Dashboard Redaksi') }}
+                        {{ __('Dashboard') }}
+                    </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('redaksi.naskah.index')" :active="request()->routeIs('redaksi.naskah.*')">
+                        {{ __('Naskah Masuk') }}
                     </x-responsive-nav-link>
                 @elseif (auth()->user()->role === 'admin')
                     <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')">
-                        {{ __('Dashboard Admin') }}
+                        {{ __('Dashboard') }}
                     </x-responsive-nav-link>
                 @endif
             @endauth

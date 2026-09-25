@@ -13,6 +13,7 @@ class Book extends Model
         'user_id',
         'genre_id',
         'title',
+        'slug',
         'synopsis',
         'status',
         'price',
@@ -35,5 +36,20 @@ class Book extends Model
     public function genre()
     {
         return $this->belongsTo(Genre::class);
+    }
+
+    public function chapters()
+    {
+        return $this->hasMany(Chapter::class)->orderBy('chapter_number');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(ManuscriptReview::class);
+    }
+
+    public function reviewer()
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 }

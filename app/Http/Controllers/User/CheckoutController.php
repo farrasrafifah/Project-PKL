@@ -36,7 +36,7 @@ class CheckoutController extends Controller
             'order_number' => 'INV-'.strtoupper(Str::random(10)),
             'user_id' => $request->user()->id,
             'total' => $books->sum('price'),
-            'status' => 'pending',
+            'status' => 'menunggu_pembayaran',
         ]);
 
         foreach ($books as $book) {
@@ -45,35 +45,3 @@ class CheckoutController extends Controller
                 'price' => $book->price,
             ]);
         }
-
-        return redirect()->route('user.checkout.pay', $order)
-            ->with('status', 'Order dibuat, lanjut ke pembayaran.');
-    }
-
-    public function pay(Order $order): View
-    {
-        abort_unless($order->user_id === auth()->id(), 403);
-
-        return view('user.checkout.pay', compact('order'));
-    }
-
-    // Konfirmasi pembayaran berhasil → masukkan semua buku ke Library
-    public function confirm(Order $order): RedirectResponse
-    {
-        abort_unless($order->user_id === auth()->id(), 403);
-
-        $order->update(['status' => 'paid']);
-
-        foreach ($order->items as $item) {
-            $order->user->libraries()->firstOrCreate(
-                ['book_id' => $item->book_id],
-                ['tipe' => 'beli']
-            );
-        }
-
-        session()->forget('cart');
-
-        return redirect()->route('user.library.index')
-            ->with('status', 'Pembayaran berhasil! Ebook masuk ke Library kamu.');
-    }
-}

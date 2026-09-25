@@ -3,20 +3,20 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-use Illuminate\View\View;
+use App\Models\Library;
+use Illuminate\Support\Facades\Auth;
 
 class LibraryController extends Controller
 {
-    public function index(Request $request): View
+    public function index()
     {
-        $books = $request->user()
-            ->libraries()
-            ->with('book.genre')
-            ->latest()
-            ->get()
-            ->pluck('book');
+        $libraries = Library::with([
+            'book.genre'
+        ])
+        ->where('user_id', Auth::id())
+        ->latest()
+        ->get();
 
-        return view('user.library.index', compact('books'));
+        return view('user.library.index', compact('libraries'));
     }
 }

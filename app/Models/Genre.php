@@ -13,4 +13,14 @@ class Genre extends Model
         'name',
         'slug',
     ];
+
+    public function getRouteKeyName(): string
+{
+    return 'slug';
+}
+
+    public function books()
+{
+    return $this->hasMany(Book::class);
+}
 }

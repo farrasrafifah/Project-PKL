@@ -31,7 +31,7 @@ class User extends Authenticatable
         ];
     }
 
-        // ================= ROLE HELPERS =================
+    // ================= ROLE HELPERS =================
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
@@ -46,8 +46,8 @@ class User extends Authenticatable
     {
         return $this->role === 'user';
     }
-    
-    // ================= RELASI (dipakai nanti) =================
+
+    // ================= RELASI =================
     public function books()
     {
         return $this->hasMany(Book::class);
@@ -61,5 +61,10 @@ class User extends Authenticatable
     public function libraries()
     {
         return $this->hasMany(Library::class);
+    }
+
+    public function readingHistories()
+    {
+        return $this->hasMany(ReadingHistory::class);
     }
 }
