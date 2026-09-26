@@ -9,36 +9,36 @@ use App\Http\Controllers\User\WritingController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\Redaksi\DashboardController as RedaksiDashboardController;
 use App\Http\Controllers\Redaksi\NaskahController as RedaksiNaskahController;
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\BookController as AdminBookController;
+use App\Http\Controllers\Admin\GenreController as AdminGenreController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
+use App\Http\Controllers\Admin\RedaksiController as AdminRedaksiController;
+use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 
 // =====================================================
-// HOMEPAGE
+// HOMEPAGE (bisa diakses tanpa login)
 // =====================================================
 Route::get('/', function () {
 
-    if (!Auth::check()) {
-        return redirect()->route('login');
+    // Kalau yang login itu admin/redaksi, tetap lempar ke dashboard masing-masing.
+    // Guest & role "user" tetap lihat halaman Home.
+    if (Auth::check()) {
+        $role = Auth::user()->role;
+
+        if ($role === 'redaksi') {
+            return redirect()->route('redaksi.dashboard');
+        }
+
+        if ($role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
     }
 
-    $role = Auth::user()->role;
-
-    if ($role === 'user') {
-        return redirect()->route('user.home');
-    }
-
-    if ($role === 'redaksi') {
-        return redirect()->route('redaksi.dashboard');
-    }
-
-    if ($role === 'admin') {
-        return redirect()->route('admin.dashboard');
-    }
-
-    Auth::logout();
-
-    return redirect()->route('login');
+    return app(HomeController::class)->index();
 
 })->name('home');
 
@@ -67,7 +67,26 @@ Route::middleware('auth')->group(function () {
 
 
 // =====================================================
-// USER
+// BUKU (bisa diakses tanpa login — guest boleh lihat-lihat)
+// =====================================================
+Route::prefix('user')
+    ->name('user.')
+    ->group(function () {
+
+        Route::get('/buku', [BookController::class, 'index'])
+            ->name('buku.index');
+
+        Route::get('/buku/genre/{genre}', [BookController::class, 'byGenre'])
+            ->name('buku.genre');
+
+        Route::get('/buku/{book}', [BookController::class, 'show'])
+            ->name('buku.show');
+
+    });
+
+
+// =====================================================
+// USER (wajib login — transaksi & data pribadi)
 // =====================================================
 Route::middleware(['auth', 'role:user'])
     ->prefix('user')
@@ -77,17 +96,9 @@ Route::middleware(['auth', 'role:user'])
         Route::get('/home', [HomeController::class, 'index'])
             ->name('home');
 
-        Route::get('/buku', [BookController::class, 'index'])
-            ->name('buku.index');
-
-        Route::get('/buku/genre/{genre}', [BookController::class, 'byGenre'])
-            ->name('buku.genre');
-
+        // Baca full ebook tetap wajib login (hak akses setelah beli/pinjam)
         Route::get('/buku/{book}/baca', [BookController::class, 'read'])
             ->name('buku.read');
-
-        Route::get('/buku/{book}', [BookController::class, 'show'])
-            ->name('buku.show');
 
         Route::get('/keranjang', [CartController::class, 'index'])
             ->name('keranjang.index');
@@ -186,8 +197,29 @@ Route::middleware(['auth', 'role:admin'])
     ->name('admin.')
     ->group(function () {
 
-        Route::get('/dashboard', function () {
-            return view('admin.dashboard');
-        })->name('dashboard');
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])
+            ->name('dashboard');
+
+        // Kelola Ebook / Buku (read-only monitoring: nggak ada create/store,
+        // karena buku dibuat oleh User lewat alur Menulis → Redaksi)
+        Route::resource('books', AdminBookController::class)
+            ->only(['index', 'edit', 'update', 'destroy']);
+
+        // Kelola Genre
+        Route::resource('genres', AdminGenreController::class);
+
+        // Kelola User (controller cuma punya index, show, destroy)
+        Route::resource('users', AdminUserController::class)
+            ->only(['index', 'show', 'destroy']);
+
+        // Kelola Redaksi
+        Route::resource('redaksi', AdminRedaksiController::class);
+
+        // Lihat Transaksi (read-only: index + show saja)
+        Route::get('/transaksi', [AdminOrderController::class, 'index'])
+            ->name('orders.index');
+
+        Route::get('/transaksi/{order}', [AdminOrderController::class, 'show'])
+            ->name('orders.show');
 
     });

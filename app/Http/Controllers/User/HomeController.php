@@ -11,17 +11,22 @@ class HomeController extends Controller
     {
         $user = auth()->user();
 
-        $recentBooks = $user->libraries()
-            ->with('book')
-            ->latest()
-            ->take(6)
-            ->get()
-            ->pluck('book');
+        $recentBooks = collect();
+        $recentBooksWritten = collect();
 
-        $recentBooksWritten = $user->books()
-            ->latest()
-            ->take(5)
-            ->get();
+        if ($user) {
+            $recentBooks = $user->libraries()
+                ->with('book')
+                ->latest()
+                ->take(6)
+                ->get()
+                ->pluck('book');
+
+            $recentBooksWritten = $user->books()
+                ->latest()
+                ->take(5)
+                ->get();
+        }
 
         return view('user.home', [
             'recentBooks' => $recentBooks,
